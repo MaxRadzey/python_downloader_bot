@@ -1,9 +1,11 @@
 from telebot.async_telebot import AsyncTeleBot
+import telebot
 
 from django.conf import settings
 
 
 bot = AsyncTeleBot(settings.BOT_TOKEN)
+telebot.logger.setLevel(settings.LOG_LEVEL)
 
 
 @bot.message_handler(commands=['help', 'start'])
