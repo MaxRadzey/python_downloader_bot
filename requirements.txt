@@ -3,3 +3,4 @@ python-telegram-bot==21.2
 python-dotenv
 pyTelegramBotAPI
 aiohttp==3.9.5
+beautifulsoup4==4.12.3
