@@ -4,8 +4,10 @@ from bs4 import BeautifulSoup
 
 from telebot.async_telebot import AsyncTeleBot
 import telebot
+from telebot import types
 
 from django.conf import settings
+from bot.middleware import CustomMiddleware
 
 
 # url = 'https://www.tiktok.com/@_il9_/video/7043465037918326018'
@@ -13,8 +15,6 @@ from django.conf import settings
 
 
 def get_video(url):
-    # response = requests.get(url, stream=True)
-    # page = BeautifulSoup(response.content, 'html.parser')
 
     cookies = {
         '_ga': 'GA1.1.1724469622.1716577356',
@@ -52,7 +52,13 @@ def get_video(url):
         'tt': 'enZHdncy',
     }
 
-    response = requests.post('https://ssstik.io/abc', params=params, cookies=cookies, headers=headers, data=data)
+    response = requests.post(
+        'https://ssstik.io/abc',
+        params=params,
+        cookies=cookies,
+        headers=headers,
+        data=data
+    )
     soupe = BeautifulSoup(response. text, 'html.parser')
     download_link = soupe.a['href']
     response = requests.get(download_link, stream=True)
@@ -67,17 +73,14 @@ telebot.logger.setLevel(settings.LOG_LEVEL)
 
 logger = logging.getLogger(__name__)
 
-
-def get_tiktok_url(url: str) -> str | None:
-    if '.tiktok.com' in url:
-        return url
-    return None
+bot.setup_middleware(CustomMiddleware())
 
 
 @bot.message_handler(commands=['start'])
 async def start_bot(message):
     """Обработчик команды start."""
-    text = 'Hi, I am TikTok Downloader Bot.\nSend me url!'
+    username = message.from_user.username
+    text = f'Hi,{username}, I am TikTok Downloader Bot.\nSend me url!'
     await bot.reply_to(message=message, text=text)
 
 
@@ -90,25 +93,20 @@ async def help(message):
 
 @bot.message_handler()
 async def video_download(message):
+
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton(
+        'Скачать музыку', callback_data='sheeet'
+    ))
     get_video(message)
     user_id = message.from_user.id
-    await bot.send_message(chat_id=user_id, text='Загрузка видео...')
-    with open('test.mp4', 'rb') as video:
-        print('aaaa')
-        await bot.send_video(chat_id=user_id, video=video, caption='@pq_downloader_bot')
 
-# @bot.message_handler(func=lambda message: True)
-# async def echo_message(message):
-#     user_id = message.from_user.id
-#     full_name = message.from_user.full_name
-#     username = message.from_user.username
-#     text = message.text
-#     url = get_tiktok_url(text)
-#     if url:
-#         ...
-#     logger.info(f'{user_id=}')
-#     logger.info(f'{full_name=}')
-#     logger.info(f'{username=}')
-#     logger.info(f'{text=}')
-#     await bot.reply_to(message=message, text=message.text)
-    # await bot.send_video(chat_id=user_id, video=..., caption=...,)
+    await bot.send_message(chat_id=user_id, text='Загрузка видео...')
+
+    with open('test.mp4', 'rb') as video:
+        await bot.send_video(
+            chat_id=user_id,
+            video=video,
+            caption='@pq_downloader_bot',
+            reply_markup=markup
+        )

@@ -18,4 +18,3 @@ class Command(BaseCommand):
             asyncio.run(bot.infinity_polling(logger_level=settings.LOG_LEVEL))
         except Exception as err:
             logger.error(f'Бот не запущен!\n{err}')
-            # self.stdout.write(f'Бот не запущен!\n{err}')
