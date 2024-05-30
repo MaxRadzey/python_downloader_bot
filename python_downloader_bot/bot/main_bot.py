@@ -5,9 +5,11 @@ from bs4 import BeautifulSoup
 from telebot.async_telebot import AsyncTeleBot
 import telebot
 from telebot import types
+from telebot.types import Message
 
 from django.conf import settings
-from bot.middleware import CustomMiddleware
+from bot.middleware import CustomMiddleware, AntifloodMiddleware
+from bot.language_dict import messages
 
 
 # url = 'https://www.tiktok.com/@_il9_/video/7043465037918326018'
@@ -74,29 +76,71 @@ telebot.logger.setLevel(settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 bot.setup_middleware(CustomMiddleware())
+bot.setup_middleware(AntifloodMiddleware(bot=bot, limit=2.0))
+
+language_in_bot = 'eng'
 
 
 @bot.message_handler(commands=['start'])
-async def start_bot(message):
+async def start_bot(message: Message) -> Message:
     """Обработчик команды start."""
     username = message.from_user.username
-    text = f'Hi,{username}, I am TikTok Downloader Bot.\nSend me url!'
+    # text = (f'Hi, {username}, I am TikTok Downloader Bot.\n'
+    #         'Send me url and i get you a video!')
+    text = messages['start_message']['rus'].format(username)
     await bot.reply_to(message=message, text=text)
 
 
 @bot.message_handler(commands=['help'])
-async def help(message):
+async def help(message: Message) -> Message:
     """Обработчик команды help."""
-    text = 'Some text HELP!!'
+    text = messages['help_msg']['rus']
     await bot.reply_to(message=message, text=text)
 
 
-@bot.message_handler()
-async def video_download(message):
+@bot.message_handler(commands=['statistics'])
+async def statistics(message: Message) -> Message:
+    """Обработчик команды statistics."""
+    text = 'Стастистика загрузок'
+    await bot.reply_to(message=message, text=text)
 
+
+@bot.message_handler(commands=['language'])
+async def language(message: Message) -> Message:
+    """Обработчик команды /language для выбора языка."""
+    text = 'Please, select a language:'
+    markup = types.InlineKeyboardMarkup()
+    button_rus = types.InlineKeyboardButton(
+        'Русский 🇷🇺', callback_data='rus'
+    )
+    button_eng = types.InlineKeyboardButton(
+        'English 🏴󠁧󠁢󠁥󠁮󠁧󠁿', callback_data='eng'
+    )
+    markup.row(button_rus, button_eng)
+    await bot.send_message(
+        chat_id=message.chat.id, text=text, reply_markup=markup
+    )
+
+
+@bot.callback_query_handler(func=lambda call: True)
+# @bot.callback_query_handler(func=lambda call: call.data == 'rus')
+async def handle(call: types.CallbackQuery):
+    global language_in_bot
+    if call.data == 'rus':
+        language_in_bot = 'rus'
+    elif call.data == 'eng':
+        language_in_bot = 'eng'
+
+
+@bot.message_handler()
+async def video_download(message: Message):
+    # message.from_user.language_code
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton(
-        'Скачать музыку', callback_data='sheeet'
+        'Скачать музыку', callback_data='save_music'
+    ))
+    markup.add(types.InlineKeyboardButton(
+        'Убрать ограничение', callback_data='del_limit'
     ))
     get_video(message)
     user_id = message.from_user.id
