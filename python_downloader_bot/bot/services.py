@@ -41,16 +41,26 @@ def update_or_create_user(data: Chat | User) -> bool:
 
 @sync_to_async
 def get_language_code(message: Message) -> str:
-    # print('aaaa')
+    """Получает из БД язык пользователя.
+    Args:
+        message (Message): Объект сообщения
+    Returns:
+        str: Код языка
+    """
     user = TelegramUser.objects.get(telegram_id=message.from_user.id)
-    # print('aaaaaaaa')
     language_code = user.language
     return language_code
 
 
 @sync_to_async
 def set_language_code(message: Message, language_code: str) -> str:
-    print('aaaa')
+    """Изменяет в БД язык пользователя.
+    Args:
+        message (Message): Объект сообщения
+        language_code (str): Код языка
+    Returns:
+        str: Код языка
+    """
     user = TelegramUser.objects.get(telegram_id=message.chat.id)
     user.language = language_code
     user.save()
