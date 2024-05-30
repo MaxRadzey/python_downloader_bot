@@ -30,9 +30,6 @@ def update_or_create_user(data: Chat | User) -> bool:
     }
     telegram_user, create_status = TelegramUser.objects.get_or_create(
         telegram_id=data.id,
-        # username=username,
-        # first_name=first_name,
-        # last_name=last_name,
         defaults=default_dict,
     )
     if create_status is False:
