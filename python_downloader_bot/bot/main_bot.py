@@ -10,6 +10,7 @@ from telebot.types import Message
 from django.conf import settings
 from bot.middleware import CustomMiddleware, AntifloodMiddleware
 from bot.language_dict import messages
+from bot.services import get_language_code, set_language_code
 
 
 # url = 'https://www.tiktok.com/@_il9_/video/7043465037918326018'
@@ -78,16 +79,15 @@ logger = logging.getLogger(__name__)
 bot.setup_middleware(CustomMiddleware())
 bot.setup_middleware(AntifloodMiddleware(bot=bot, limit=2.0))
 
-language_in_bot = 'eng'
+# language_in_bot = 'eng'
 
 
 @bot.message_handler(commands=['start'])
 async def start_bot(message: Message) -> Message:
     """Обработчик команды start."""
     username = message.from_user.username
-    # text = (f'Hi, {username}, I am TikTok Downloader Bot.\n'
-    #         'Send me url and i get you a video!')
-    text = messages['start_message']['rus'].format(username)
+    language_code = await get_language_code(message)
+    text = messages['start_message'][language_code].format(username)
     await bot.reply_to(message=message, text=text)
 
 
@@ -125,11 +125,12 @@ async def language(message: Message) -> Message:
 @bot.callback_query_handler(func=lambda call: True)
 # @bot.callback_query_handler(func=lambda call: call.data == 'rus')
 async def handle(call: types.CallbackQuery):
-    global language_in_bot
-    if call.data == 'rus':
-        language_in_bot = 'rus'
-    elif call.data == 'eng':
-        language_in_bot = 'eng'
+    # print('aaaaaa')
+    language_code = await set_language_code(call.message, call.data)
+    text = messages['set_language'][language_code]
+    await bot.send_message(
+        chat_id=call.message.chat.id, text=text
+    )
 
 
 @bot.message_handler()

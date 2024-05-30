@@ -1,7 +1,7 @@
 import logging
 
 from asgiref.sync import sync_to_async
-from telebot.types import Chat, User
+from telebot.types import Chat, User, Message
 
 from bot.models import TelegramUser
 
@@ -37,3 +37,21 @@ def update_or_create_user(data: Chat | User) -> bool:
     else:
         logger.info(f'Пользователь создан {data.id} - @{username}')
     return create_status
+
+
+@sync_to_async
+def get_language_code(message: Message) -> str:
+    # print('aaaa')
+    user = TelegramUser.objects.get(telegram_id=message.from_user.id)
+    # print('aaaaaaaa')
+    language_code = user.language
+    return language_code
+
+
+@sync_to_async
+def set_language_code(message: Message, language_code: str) -> str:
+    print('aaaa')
+    user = TelegramUser.objects.get(telegram_id=message.chat.id)
+    user.language = language_code
+    user.save()
+    return user.language

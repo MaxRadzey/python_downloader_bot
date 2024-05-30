@@ -20,7 +20,7 @@ class TelegramUser(models.Model):
     )
     username = models.CharField(
         _('username'), max_length=150, blank=True, null=True
-    )
+    )  # Добавить уникальность
     first_name = models.CharField(
         _('Имя'), max_length=150, blank=True, null=True
     )

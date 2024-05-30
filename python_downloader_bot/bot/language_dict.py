@@ -10,5 +10,9 @@ messages = {
                 'Send me url and i get you a video!'),
         'rus': ('Привет, {}, я TikTok Downloader Bot.\n'
                 'Отправь мне ссылку и я отправлю тебе видео!')
-    }
+    },
+    'set_language': {
+        'eng': 'Set english language,',
+        'rus': 'Язык изменени на русский'
+    },
 }
