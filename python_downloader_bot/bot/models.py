@@ -27,15 +27,16 @@ class TelegramUser(models.Model):
     last_name = models.CharField(
         _('Фамилия'), max_length=150, blank=True, null=True
     )
-    # create_at = models.DateTimeField(auto_now_add=True)
-    # language = models.CharField(
-    #     verbose_name='Язык пользователя', max_length=5,
-    #     choices=USER_LANGUAGE, default='eng'
-    # )
-    # role = models.CharField(
-    #     verbose_name='Статус юзера', max_length=40,
-    #     choices=USER_ROLE, default='free_status_user'
-    # )
+    create_at = models.DateTimeField(auto_now_add=True)
+    language = models.CharField(
+        verbose_name='Язык пользователя', max_length=5,
+        blank=True, null=True,
+        choices=USER_LANGUAGE, default='eng'
+    )
+    role = models.CharField(
+        verbose_name='Статус юзера', max_length=40,
+        choices=USER_ROLE, default='free_status_user'
+    )
 
     class Meta:
         verbose_name = 'Пользователь'
