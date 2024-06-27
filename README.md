@@ -17,7 +17,7 @@
 ## Технологии
 - [Django](https://docs.djangoproject.com/en/stable/)
 - [Python 3.11](https://www.python.org)
-- [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI))
+- [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
 
 ### Как запустить проект:
 
