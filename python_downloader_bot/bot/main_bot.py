@@ -1,11 +1,13 @@
 import logging
 import requests
 from bs4 import BeautifulSoup
+import ffmpeg
 
 from telebot.async_telebot import AsyncTeleBot
 import telebot
 from telebot import types
 from telebot.types import Message
+import moviepy.editor as mpy
 
 from django.conf import settings
 from bot.middleware import CustomMiddleware, AntifloodMiddleware
@@ -79,8 +81,6 @@ logger = logging.getLogger(__name__)
 bot.setup_middleware(CustomMiddleware())
 bot.setup_middleware(AntifloodMiddleware(bot=bot, limit=2.0))
 
-# language_in_bot = 'eng'
-
 
 @bot.message_handler(commands=['start'])
 async def start_bot(message: Message) -> Message:
@@ -122,10 +122,31 @@ async def language(message: Message) -> Message:
     )
 
 
+@bot.callback_query_handler(func=lambda call: call.data == 'save_music')
+async def music_download(call: types.CallbackQuery):
+    user_id = call.message.from_user.id
+    video_name = mpy.VideoFileClip(call.message.video.file_name)
+    music = video_name.audio
+    mp4_file = "test.mp4"
+    (
+        ffmpeg
+        .input("pipe:")
+        .output(mp4_file, format="wav")
+        .run_async()
+    ).stdin(music)
+    # music.write_arma(
+    #     filename="music.mp3", fps=44100, bitrate=128000
+    # )
+    await bot.send_audio(
+        chat_id=user_id,
+        video=music,
+        caption='@pq_downloader_bot',
+    )
+
+
 @bot.callback_query_handler(func=lambda call: True)
 # @bot.callback_query_handler(func=lambda call: call.data == 'rus')
 async def handle(call: types.CallbackQuery):
-    # print('aaaaaa')
     language_code = await set_language_code(call.message, call.data)
     text = messages['set_language'][language_code]
     await bot.send_message(
