@@ -38,8 +38,7 @@ DEBUG=True
 SECRET_KEY = Секретный ключ джанго-проекта
 ALLOWED_HOSTS='*'
 ```
-Запуск бота
-```
 Бот запускается командой
+```
 python manage.py run_bot
 ```
