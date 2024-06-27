@@ -15,8 +15,8 @@
 Реализована админка на джанго для управления пользователями, количеством скачанных видео и их статусом. Также реализовано сохранение данных в БД SQlite.
 
 ## Технологии
-- [Django](https://docs.djangoproject.com/en/stable/)
 - [Python 3.11](https://www.python.org)
+- [Django](https://docs.djangoproject.com/en/stable/)
 - [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI)
 
 ### Как запустить проект:
@@ -24,7 +24,7 @@
 Клонировать репозиторий:
 
 ```
-git@github.com:MaxRadzey/foodgram-project-react.git
+git@github.com:MaxRadzey/python_downloader_bot.git
 ```
 
 Создать файл .env и указать актуальные данные
